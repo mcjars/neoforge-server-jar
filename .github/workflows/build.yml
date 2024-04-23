@@ -9,6 +9,8 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    permissions: 
+      contents: write
 
     steps:
     - name: Checkout repository
@@ -37,8 +39,7 @@ jobs:
       id: create_release
       uses: softprops/action-gh-release@v2
       with:
-        files: |
-          target/NeoForgeServerJAR.jar
+        files: target/NeoForgeServerJAR.jar
         token: ${{ secrets.GITHUB_TOKEN }}
         tag_name: ${{ steps.get-version-id.outputs.id }}
         draft: false
