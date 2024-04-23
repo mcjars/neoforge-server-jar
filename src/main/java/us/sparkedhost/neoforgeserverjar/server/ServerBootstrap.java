@@ -1,4 +1,4 @@
-package us.sparkedhost.forgeserverjar.server;
+package us.sparkedhost.neoforgeserverjar.server;
 
 import java.io.IOException;
 

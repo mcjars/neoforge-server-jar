@@ -31,14 +31,14 @@ jobs:
       run: mvn install
 
     - name: Run Jar
-      run: java -jar target/ForgeServerJAR.jar
+      run: java -jar target/NeoForgeServerJAR.jar
 
     - name: Create Release
       id: create_release
       uses: softprops/action-gh-release@v2
       with:
         files: |
-          target/ForgeServerJAR.jar
+          target/NeoForgeServerJAR.jar
         token: ${{ secrets.GITHUB_TOKEN }}
         tag_name: ${{ steps.get-version-id.outputs.id }}
         draft: false

@@ -1,12 +1,12 @@
-package us.sparkedhost.forgeserverjar;
+package us.sparkedhost.neoforgeserverjar;
 
-import us.sparkedhost.forgeserverjar.server.ServerBootstrap;
-import us.sparkedhost.forgeserverjar.utils.ErrorReporter;
+import us.sparkedhost.neoforgeserverjar.server.ServerBootstrap;
+import us.sparkedhost.neoforgeserverjar.utils.ErrorReporter;
 
 import java.io.*;
 import java.lang.management.ManagementFactory;
 
-public class ForgeServerJAR {
+public class NeoForgeServerJAR {
     public static void main(final String[] args) {
         // Determine unix_args.txt location
         String directoryPath = "libraries/net/minecraftforge/forge";

@@ -1,1 +1,1 @@
-# Forge Server JAR
+# NeoForge Server JAR

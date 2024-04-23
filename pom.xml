@@ -5,13 +5,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>us.sparkedhost</groupId>
-    <artifactId>ForgeServerJAR</artifactId>
+    <artifactId>NeoForgeServerJAR</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <packaging>jar</packaging>
 
-    <name>ForgeServerJAR</name>
-    <description>Forge Server loader for Sparked Host.</description>
+    <name>NeoForgeServerJAR</name>
+    <description>NeoForge Server loader for mcvapi.</description>
 
     <properties>
         <java.version>1.8</java.version>
@@ -55,7 +55,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>us.sparkedhost.forgeserverjar.ForgeServerJAR</mainClass>
+                            <mainClass>us.sparkedhost.neoforgeserverjar.NeoForgeServerJAR</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

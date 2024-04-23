@@ -1,4 +1,4 @@
-package us.sparkedhost.forgeserverjar.utils;
+package us.sparkedhost.neoforgeserverjar.utils;
 
 import lombok.experimental.UtilityClass;
 
