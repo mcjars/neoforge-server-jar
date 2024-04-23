@@ -3,7 +3,7 @@ package dev.mcvapi.neoforgeserverjar;
 import dev.mcvapi.neoforgeserverjar.server.ServerBootstrap;
 import dev.mcvapi.neoforgeserverjar.utils.ErrorReporter;
 
-import java.io.*;
+import java.io.File;
 import java.lang.management.ManagementFactory;
 
 public class NeoForgeServerJAR {
@@ -28,7 +28,6 @@ public class NeoForgeServerJAR {
 			ErrorReporter.error("09", true);
 		}
 
-		// Server startup
 		String[] vmArgs = ManagementFactory.getRuntimeMXBean().getInputArguments().toArray(new String[0]);
 		String[] cmd = new String[vmArgs.length + 2];
 		cmd[0] = "java";
@@ -36,7 +35,8 @@ public class NeoForgeServerJAR {
 		System.arraycopy(vmArgs, 0, cmd, 1, vmArgs.length);
 
 		boolean windows = System.getProperty("os.name").startsWith("Windows");
-		cmd[1 + vmArgs.length] = "@libraries/net/neoforged/neoforge/" + forgeVersion + "/" + (windows ? "win" : "unix") + "_args.txt";
+		cmd[1 + vmArgs.length] = "@libraries/net/neoforged/neoforge/" + forgeVersion + "/" + (windows ? "win" : "unix")
+				+ "_args.txt";
 
 		try {
 			new ServerBootstrap().startServer(cmd);
