@@ -10,7 +10,14 @@ public class ServerBootstrap {
 				.inheritIO()
 				.start();
 
-			Runtime.getRuntime().addShutdownHook(new Thread(process::destroy));
+			// Forward Ctrl+C signal to the child process
+			Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+				process.destroy();
+				try {
+					process.waitFor();
+				} catch (InterruptedException e) {
+				}
+			}));
 
 			while (process.isAlive()) {
 				try {
@@ -20,7 +27,7 @@ public class ServerBootstrap {
 				}
 			}
 		} catch (IOException exception) {
-			throw new ServerStartupException("Failed to start the Forge server.", exception);
+			throw new ServerStartupException("Failed to start the NeoForge server.", exception);
 		}
 	}
 
