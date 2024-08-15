@@ -1,60 +1,87 @@
 package dev.mcvapi.neoforgeserverjar.server;
 
-import com.sun.jna.Library;
-import com.sun.jna.Native;
-import com.sun.jna.Pointer;
-import com.sun.jna.ptr.IntByReference;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 
 public class ServerBootstrap {
-    public interface CLibrary extends Library {
-			CLibrary INSTANCE = Native.load("c", CLibrary.class);
-
-			int kill(int pid, int sig);
-    }
-
-    public static final int SIGINT = 2;
-    public static final int SIGTERM = 15;
+	private static class ProcessHolder {
+		Process process;
+		BufferedWriter writer;
+		BufferedReader stdoutReader;
+		BufferedReader stderrReader;
+	}
 
 	public void startServer(String[] cmd) throws ServerStartupException {
-		Process process = null;
+		ProcessHolder processHolder = new ProcessHolder();
 		try {
 			ProcessBuilder processBuilder = new ProcessBuilder(cmd);
-			processBuilder.inheritIO();
-			process = processBuilder.start();
+			processHolder.process = processBuilder.start();
+
+			processHolder.writer = new BufferedWriter(new OutputStreamWriter(processHolder.process.getOutputStream()));
+			processHolder.stdoutReader = new BufferedReader(new InputStreamReader(processHolder.process.getInputStream()));
+			processHolder.stderrReader = new BufferedReader(new InputStreamReader(processHolder.process.getErrorStream()));
+
+			new Thread(() -> {
+				try {
+					String line;
+					while ((line = processHolder.stdoutReader.readLine()) != null) {
+						System.out.println(line);
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}).start();
+
+			new Thread(() -> {
+				try {
+					String line;
+					while ((line = processHolder.stderrReader.readLine()) != null) {
+						System.err.println(line);
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}).start();
 
 			Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-				if (process.isAlive()) {
+				if (processHolder.process != null && processHolder.process.isAlive()) {
 					try {
-						forwardSignal(process.pid(), SIGINT);
-						process.waitFor();
-					} catch (InterruptedException e) {
+						processHolder.writer.write("stop\n");
+						processHolder.writer.flush();
+
+						processHolder.process.waitFor();
+					} catch (IOException | InterruptedException e) {
 						Thread.currentThread().interrupt();
 					}
 				}
 			}));
 
-			while (true) {
-				try {
-					process.waitFor();
-					break;
-				} catch (InterruptedException e) {
-					Thread.currentThread().interrupt();
-				}
+			try {
+				processHolder.process.waitFor();
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
 			}
 		} catch (IOException exception) {
-			throw new ServerStartupException("Failed to start the NeoForge server.", exception);
+				throw new ServerStartupException("Failed to start the NeoForge server.", exception);
 		} finally {
-			if (process != null && process.isAlive()) {
-				process.destroy();
+			if (processHolder.process != null && processHolder.process.isAlive()) {
+				try {
+					processHolder.writer.write("stop\n");
+					processHolder.writer.flush();
+				} catch (IOException e) {
+					e.printStackTrace();
+				} finally {
+					processHolder.process.destroy();
+					try {
+						processHolder.process.waitFor();
+					} catch (InterruptedException e) {
+						Thread.currentThread().interrupt();
+					}
+				}
 			}
-		}
-	}
-
-	private void forwardSignal(long pid, int signal) {
-		int pidInt = (int) pid;
-		int result = CLibrary.INSTANCE.kill(pidInt, signal);
-		if (result != 0) {
-			System.err.println("Failed to send signal " + signal + " to process " + pid + ". Error code: " + result);
 		}
 	}
 
