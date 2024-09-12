@@ -52,7 +52,7 @@ public class NeoForgeServerJAR {
 		System.arraycopy(vmArgs, 0, cmd, 1, vmArgs.length);
 
 		boolean windows = System.getProperty("os.name").startsWith("Windows");
-		cmd[1 + vmArgs.length] = "@libraries/net/neoforged/neoforge/" + forgeVersion + "/" + (windows ? "win" : "unix")
+		cmd[1 + vmArgs.length] = "@" + directoryPath + "/" + forgeVersion + "/" + (windows ? "win" : "unix")
 				+ "_args.txt";
 
 		System.arraycopy(args, 0, cmd, 2 + vmArgs.length, args.length);
