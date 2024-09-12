@@ -8,7 +8,18 @@ import java.lang.management.ManagementFactory;
 
 public class NeoForgeServerJAR {
 	public static void main(final String[] args) {
-		String directoryPath = "libraries/net/neoforged/neoforge";
+		String directoryPath = null;
+		File neoforgeDir = new File("libraries/net/neoforged/neoforge");
+		File forgeDir = new File("libraries/net/neoforged/forge");
+
+		if (neoforgeDir.exists() && neoforgeDir.isDirectory()) {
+			directoryPath = neoforgeDir.getPath();
+		} else if (forgeDir.exists() && forgeDir.isDirectory()) {
+			directoryPath = forgeDir.getPath();
+		} else {
+			ErrorReporter.error("10", true);
+		}
+
 		String forgeVersion = null;
 		File directory = new File(directoryPath);
 		File[] filesAndDirs = directory.listFiles();
